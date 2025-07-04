@@ -7,7 +7,11 @@
     "app.js",
     "constants.js"
   ],
-  "ignore": ["node_modules", ".tmp", ".venv"],
+  "ignore": [
+    "node_modules",
+    ".tmp",
+    ".venv"
+  ],
   "ext": "js,json",
   "verbose": true,
   "delay": 1000,

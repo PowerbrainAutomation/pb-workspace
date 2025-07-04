@@ -51,6 +51,38 @@
     }
   }
 
+  .summaryTab {
+    border-radius: 3px 3px 0 0;
+    min-width: 100px;
+    position: relative;
+    transition: all 0.1s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.12);
+
+      .name {
+        color: #fff;
+      }
+
+      .editButton {
+        opacity: 1;
+      }
+    }
+  }
+
+  .summaryTabActive {
+    background: rgba(0, 0, 0, 0.24);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.32);
+    }
+
+    .name {
+      color: #fff;
+      font-weight: bold;
+    }
+  }
+
   .wrapper {
     border-bottom: 1px solid rgba(0, 0, 0, 0.24);
     display: flex;

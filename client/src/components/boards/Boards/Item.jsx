@@ -26,6 +26,7 @@ const Item = React.memo(({ id, index }) => {
   );
 
   const board = useSelector((state) => selectBoardById(state, id));
+  console.log('board', board);
   const notificationsTotal = useSelector((state) => selectNotificationsTotalByBoardId(state, id));
   const isActive = useSelector((state) => id === selectors.selectPath(state).boardId);
 

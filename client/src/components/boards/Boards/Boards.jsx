@@ -13,6 +13,7 @@ import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import DroppableTypes from '../../../constants/DroppableTypes';
 import Item from './Item';
+import Summary from './Summary';
 import AddStep from './AddStep';
 
 import styles from './Boards.module.scss';
@@ -61,6 +62,14 @@ const Boards = React.memo(() => {
 
   const AddPopup = usePopup(AddStep);
 
+  const handleProjectSummaryClick = useCallback(() => {
+    // if (!canEditProject) {
+    //   return;
+    // }
+
+    dispatch(entryActions.openProjectSummaryModal());
+  }, [dispatch]);
+
   return (
     <div className={styles.wrapper} onWheel={handleWheel}>
       <div ref={tabsWrapperRef} className={styles.tabsWrapper}>
@@ -69,8 +78,11 @@ const Boards = React.memo(() => {
             {({ innerRef, droppableProps, placeholder }) => (
               // eslint-disable-next-line react/jsx-props-no-spreading
               <div {...droppableProps} ref={innerRef} className={styles.tabs}>
+                <Button className={styles.addButton} onClick={handleProjectSettingsClick}>
+                  Summary
+                </Button>
                 {boardIds.map((boardId, index) => (
-                  <Item key={boardId} id={boardId} index={index} />
+                  <Item key={boardId} id={boardId} index={index+1} />
                 ))}
                 {placeholder}
                 {canAdd && (

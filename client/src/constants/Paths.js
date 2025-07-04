@@ -9,6 +9,7 @@ const OIDC_CALLBACK = '/oidc-callback';
 const PROJECTS = '/projects/:id';
 const BOARDS = '/boards/:id';
 const CARDS = '/cards/:id';
+const SUMMARY = '/projects/:id/summary';
 
 export default {
   ROOT,
@@ -17,4 +18,5 @@ export default {
   PROJECTS,
   BOARDS,
   CARDS,
+  SUMMARY
 };

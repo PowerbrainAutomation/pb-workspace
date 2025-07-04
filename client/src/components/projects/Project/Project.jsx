@@ -11,6 +11,7 @@ import ModalTypes from '../../../constants/ModalTypes';
 import ProjectSettingsModal from '../ProjectSettingsModal';
 import Boards from '../../boards/Boards';
 import BoardSettingsModal from '../../boards/BoardSettingsModal';
+import ProjectSummaryModal from '../ProjectSummaryModal';
 
 import styles from './Project.module.scss';
 
@@ -26,6 +27,10 @@ const Project = React.memo(() => {
         break;
       case ModalTypes.BOARD_SETTINGS:
         modalNode = <BoardSettingsModal />;
+
+        break;
+      case ModalTypes.PROJECT_SUMMARY:
+        modalNode = <ProjectSummaryModal />;
 
         break;
       default:

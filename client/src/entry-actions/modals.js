@@ -54,6 +54,13 @@ const openBoardActivitiesModal = () => ({
   },
 });
 
+const openProjectSummaryModal = () => ({
+  type: EntryActionTypes.MODAL_OPEN,
+  payload: {
+    type: ModalTypes.PROJECT_SUMMARY,
+  },
+});
+
 const closeModal = () => ({
   type: EntryActionTypes.MODAL_CLOSE,
   payload: {},
@@ -66,5 +73,6 @@ export default {
   openProjectSettingsModal,
   openBoardSettingsModal,
   openBoardActivitiesModal,
+  openProjectSummaryModal,
   closeModal,
 };
