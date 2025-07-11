@@ -78,7 +78,7 @@ const Boards = React.memo(() => {
             {({ innerRef, droppableProps, placeholder }) => (
               // eslint-disable-next-line react/jsx-props-no-spreading
               <div {...droppableProps} ref={innerRef} className={styles.tabs}>
-                <Button className={styles.addButton} onClick={handleProjectSettingsClick}>
+                <Button className={styles.summaryButton} onClick={handleProjectSummaryClick}>
                   Summary
                 </Button>
                 {boardIds.map((boardId, index) => (

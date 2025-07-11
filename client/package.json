@@ -160,7 +160,9 @@
     "vite-plugin-commonjs": "^0.10.4",
     "vite-plugin-node-polyfills": "^0.23.0",
     "vite-plugin-svgr": "^4.3.0",
-    "zxcvbn": "^4.4.2"
+    "zxcvbn": "^4.4.2",
+    "echarts-for-react": "^3.0.2",
+    "echarts": "^5.4.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.27.1",

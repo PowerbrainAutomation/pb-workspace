@@ -11,8 +11,7 @@ import { Tab } from 'semantic-ui-react';
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
-import ManagersPane from './ManagersPane';
-import BaseCustomFieldGroupsPane from './BaseCustomFieldGroupsPane';
+import SummaryPane from './SummaryPane';
 
 import styles from './ProjectSummaryModal.module.scss';
 
@@ -35,25 +34,18 @@ const ProjectSummaryModal = React.memo(() => {
 
   const panes = [
     {
-      menuItem: t('common.baseCustomFields', {
-        context: 'title',
-      }),
-      render: () => <GeneralPane />,
-    },
-    {
       menuItem: t('common.managers', {
         context: 'title',
       }),
-      render: () => <ManagersPane />,
+      render: () => <SummaryPane />,
     },
   ];
 
   return (
     <ClosableModal
       closeIcon
-      size="small"
+      size="medium"
       centered={false}
-      dimmer={isBackgroundPaneActive && { className: styles.dimmerTransparent }}
       onClose={handleClose}
     >
       <ClosableModal.Content>
