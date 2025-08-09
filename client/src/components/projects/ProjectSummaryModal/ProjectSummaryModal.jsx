@@ -34,9 +34,7 @@ const ProjectSummaryModal = React.memo(() => {
 
   const panes = [
     {
-      menuItem: t('common.managers', {
-        context: 'title',
-      }),
+      menuItem: "Project Summary",
       render: () => <SummaryPane />,
     },
   ];
@@ -44,7 +42,7 @@ const ProjectSummaryModal = React.memo(() => {
   return (
     <ClosableModal
       closeIcon
-      size="medium"
+      size="large"
       centered={false}
       onClose={handleClose}
     >

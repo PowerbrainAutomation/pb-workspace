@@ -26,6 +26,7 @@ import { Button,
 // echarts
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import * as echarts from 'echarts/core';
+import selectors from '../../../selectors';
 import { GridComponent } from 'echarts/components';
 import { LineChart } from 'echarts/charts';
 import { UniversalTransition } from 'echarts/features';
@@ -35,10 +36,17 @@ echarts.use([GridComponent, LineChart, CanvasRenderer, UniversalTransition]);
 
 import styles from './SummaryPane.module.scss';
 import { use } from 'i18next';
+import { color } from 'echarts';
 
 const SummaryPane = React.memo(() => {
   // TODO: rename?
 
+  // Hardcoded for now
+  const token = 'eix4lohp8os2pief5ieDahngahg7ku6oxor5UkeiMo7ra5tha2oiphaed2toitai0gaefahPhu7eequeiriech2ahm8Yeinahpe2die2eehagh0thuu7ooKahD0shah3ohNgeeSoyeeb9eiGhee0eiV0exoo4foovai2aijaiTaiQuohXie8hae3Owoongi0aiTh0waighaeraichaegiS8Iewohva0lai0ahDahngeebaeng0oud8aew5waixeichoh1ooriP8Ohrohjeikae9xiu3ieJaiyohsoh1IeKoxoh5aevaic3eekei2eon5johchei0ohohj4ieng3Phaijeef1aisoolood1AiGiNgeek9AhK5zoo6eeveepheil3Soh0ookaexa7xaj2ita0thahx5piechee7vae7yieFamei1Eisaeciewi6AemaiXahSheofephaiwahbihaseo8ierahngiTie3kohk3mieghe2kieneiHu4zoocu'
+
+  const project = useSelector(selectors.selectCurrentProject);
+
+  const [projectData, setProjectData] = useState([]);
   const [isActive, setActive] = useState([0,1]);
 
   const onClick = (e, titleProps) => {
@@ -53,27 +61,47 @@ const SummaryPane = React.memo(() => {
   }
 
   useEffect(() => {
+    fetch(`https://ext.workspace.powerbrain.id/${token}/project/1563943224110744964`).then( async x => setProjectData( await x.json() ));
+  }, []);
+
+  useEffect(() => {
     console.log('isActive', isActive);
   }, [isActive]);
 
+  useEffect(() => {
+    console.log('projectData', projectData);
+  }, [projectData]);
 
-  const SummaryCurve = () => {
+
+  const SummaryCurve = ({data}) => {
 
     let option = {
-      grid: { top: 8, right: 8, bottom: 24, left: 36 },
+      tooltip: {
+        show:true,
+        trigger: 'axis',
+        valueFormatter: (value) => `${value} %`,
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      grid: {
+				bottom: '20px',
+				left: '50px',
+				right: '10px',
+				top: '12px'
+			},
       xAxis: {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        data: data['echarts_cat']
       },
       yAxis: {
-        type: 'value'
+        type: 'value',
+        min: 0,
+        max: 100
       },
-      series: [
-        {
-          data: [10, 12, 24, 76, 90, 95, 100],
-          type: 'line'
-        }
-      ]
+      series: data['echarts_series']
     };
 
     return (
@@ -86,7 +114,18 @@ const SummaryPane = React.memo(() => {
     )
   }
 
-  const SummaryTable = () => {
+  const SummaryTable = ({data}) => {
+    const TableRows = data.procurement_list?.map( x => (
+      <TableRow>
+            <TableCell>
+              {x.name}
+            </TableCell>
+            <TableCell> {x.budget} IDR </TableCell>
+            <TableCell> {x.start} </TableCell>
+            <TableCell> {x.finish} </TableCell>
+          </TableRow>
+    ))
+
     return (
     <div className={styles.tableWrapper}>
       <Table celled striped>
@@ -98,48 +137,8 @@ const SummaryPane = React.memo(() => {
             <TableHeaderCell>Finish</TableHeaderCell>
           </TableRow>
         </TableHeader>
-
         <TableBody>
-          <TableRow>
-            <TableCell>
-              IUPTLS - NIDI - SLO
-            </TableCell>
-            <TableCell> 35.000.000 IDR </TableCell>
-            <TableCell> 2025/07/01 </TableCell>
-            <TableCell> 2025/07/30 </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              PV Cable
-            </TableCell>
-            <TableCell>230.000.000 IDR</TableCell>
-            <TableCell> 2025/07/01 </TableCell>
-            <TableCell> 2025/07/30 </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              ACDB
-            </TableCell>
-            <TableCell>53.000.000 IDR</TableCell>
-            <TableCell> 2025/07/01 </TableCell>
-            <TableCell> 2025/07/30 </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              Sensor
-            </TableCell>
-            <TableCell>34.000.000 IDR</TableCell>
-            <TableCell> 2025/07/01 </TableCell>
-            <TableCell> 2025/07/30 </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              PV Mounting
-            </TableCell>
-            <TableCell>23.000.000 IDR</TableCell>
-            <TableCell> 2025/07/01 </TableCell>
-            <TableCell> 2025/07/30 </TableCell>
-          </TableRow>
+          {TableRows}
         </TableBody>
       </Table>
     </div>
@@ -149,9 +148,9 @@ const SummaryPane = React.memo(() => {
   const panels = [
     {
       index: 0,
-      key: "overview",
-      title: "Overview",
-      content: { content:<SummaryCurve/> },
+      key: "s-curve",
+      title: "S Curve",
+      content: { content:<SummaryCurve data={projectData}/> },
       onTitleClick: onClick,
       active: isActive.includes(0) ? true : false
     },
@@ -159,7 +158,7 @@ const SummaryPane = React.memo(() => {
       index: 1,
       key: "procurement-list",
       title: "Procurement List",
-      content: { content: <SummaryTable />},
+      content: { content: <SummaryTable data={projectData}/>},
       onTitleClick: onClick,
       active: isActive.includes(1) ? true : false
     }

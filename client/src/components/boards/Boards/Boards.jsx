@@ -13,7 +13,6 @@ import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import DroppableTypes from '../../../constants/DroppableTypes';
 import Item from './Item';
-import Summary from './Summary';
 import AddStep from './AddStep';
 
 import styles from './Boards.module.scss';

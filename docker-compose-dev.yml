@@ -6,6 +6,7 @@ services:
     image: planka-dev
     pull_policy: never
     command: ["bash", "-c", "npm install && npm run db:init && npm start"]
+    #command: ["tail", "-f", "/dev/null"]
     restart: on-failure
     volumes:
       - ./server:/app
