@@ -34,10 +34,69 @@ module.exports = {
       request: this.req,
     });
 
+    const baseCustomFieldGroup = await sails.helpers.baseCustomFieldGroups.createOne.with({
+      values: {
+        name: 'Item Info',
+        project,
+      },
+      actorUser: currentUser,
+      request: this.req,
+    });
+
+    const customField_1 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
+      project,
+      values: {
+        name: 'Budget',
+        showOnFrontOfCard: false,
+        position: 65536,
+        baseCustomFieldGroup,
+      },
+      actorUser: currentUser,
+      request: this.req,
+    });
+
+    const customField_2 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
+      project,
+      values: {
+        name: 'Start Date',
+        showOnFrontOfCard: false,
+        position: 131072,
+        baseCustomFieldGroup,
+      },
+      actorUser: currentUser,
+      request: this.req,
+    });
+
+    const customField_3 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
+      project,
+      values: {
+        name: 'Finish Date',
+        showOnFrontOfCard: false,
+        position: 196608,
+        baseCustomFieldGroup,
+      },
+      actorUser: currentUser,
+      request: this.req,
+    });
+
+    const customField_4 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
+      project,
+      values: {
+        name: 'Actual',
+        showOnFrontOfCard: false,
+        position: 262144,
+        baseCustomFieldGroup,
+      },
+      actorUser: currentUser,
+      request: this.req,
+    });
+
     return {
       item: project,
       included: {
         projectManagers: [projectManager],
+        initialBaseCustomFieldGroups: [baseCustomFieldGroup],
+        initialCustomFields: [customField_1, customField_2, customField_3, customField_4],
       },
     };
   },

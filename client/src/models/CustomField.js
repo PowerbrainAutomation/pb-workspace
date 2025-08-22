@@ -76,6 +76,12 @@ export default class extends BaseModel {
         CustomField.upsert(payload.customField);
 
         break;
+      case ActionTypes.PROJECT_CREATE__SUCCESS:
+        payload.initialCustomFields.forEach((customField) => {
+          CustomField.upsert(customField);
+        })
+
+        break;
       case ActionTypes.CUSTOM_FIELD_CREATE__FAILURE:
         CustomField.withId(payload.localId).delete();
 

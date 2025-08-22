@@ -42,18 +42,20 @@ export function* createProject(data) {
 
   let project;
   let projectManagers;
+  let initialBaseCustomFieldGroups;
+  let initialCustomFields;
 
   try {
     ({
       item: project,
-      included: { projectManagers },
+      included: { projectManagers, initialBaseCustomFieldGroups, initialCustomFields },
     } = yield call(request, api.createProject, data));
   } catch (error) {
     yield put(actions.createProject.failure(error));
     return;
   }
 
-  yield put(actions.createProject.success(project, projectManagers));
+  yield put(actions.createProject.success(project, projectManagers, initialBaseCustomFieldGroups, initialCustomFields));
   yield call(goToProject, project.id);
 }
 

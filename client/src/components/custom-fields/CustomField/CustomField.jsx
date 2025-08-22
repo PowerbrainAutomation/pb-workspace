@@ -95,7 +95,7 @@ const CustomField = React.memo(({ id, customFieldGroupId }) => {
             {customFieldValue ? customFieldValue.content : '\u00A0'}
           </div>
         )}
-        {customFieldValue && customFieldValue.content && (
+        {customFieldValue && customFieldValue.content && !customField.name.toLowerCase().includes('date') && (
           <Button className={styles.copyButton} onClick={handleCopyClick}>
             <Icon fitted name={isCopied ? 'check' : 'copy'} />
           </Button>

@@ -6,21 +6,19 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Button,
-         Divider,
-         Header,
-         Tab,
-         AccordionTitle,
-         AccordionContent,
+import { Tab,
          Accordion,
-         Icon,
          TableRow,
          TableHeaderCell,
          TableHeader,
          TableCell,
          TableBody,
          Table,
-         Transition
+         Dimmer,
+         Loader,
+         DimmerDimmable,
+         Message,
+         MessageHeader,
 } from 'semantic-ui-react';
 
 // echarts
@@ -48,6 +46,8 @@ const SummaryPane = React.memo(() => {
 
   const [projectData, setProjectData] = useState([]);
   const [isActive, setActive] = useState([0,1]);
+  const [isFetching, setIsFetching] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   const onClick = (e, titleProps) => {
 
@@ -61,7 +61,22 @@ const SummaryPane = React.memo(() => {
   }
 
   useEffect(() => {
-    fetch(`https://ext.workspace.powerbrain.id/${token}/project/1563943224110744964`).then( async x => setProjectData( await x.json() ));
+    const fetchData = async () => {
+      setIsFetching(true);
+      setFetchError(null);
+      try {
+        const response = await fetch(`https://ext.workspace.powerbrain.id/${token}/project/${project.id}`);
+        const data = await response.json();
+        setProjectData(data);
+      } catch (error) {
+        setFetchError("No Data Available for This Project");
+        console.error("Error fetching project data:", error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -120,7 +135,7 @@ const SummaryPane = React.memo(() => {
             <TableCell>
               {x.name}
             </TableCell>
-            <TableCell> {x.budget} IDR </TableCell>
+            <TableCell> {Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', currencyDisplay: 'symbol' }).format(x.budget)}</TableCell>
             <TableCell> {x.start} </TableCell>
             <TableCell> {x.finish} </TableCell>
           </TableRow>
@@ -131,7 +146,7 @@ const SummaryPane = React.memo(() => {
       <Table celled striped>
         <TableHeader>
           <TableRow>
-            <TableHeaderCell>Task</TableHeaderCell>
+            <TableHeaderCell>Item Name</TableHeaderCell>
             <TableHeaderCell>Harga</TableHeaderCell>
             <TableHeaderCell>Start</TableHeaderCell>
             <TableHeaderCell>Finish</TableHeaderCell>
@@ -164,10 +179,21 @@ const SummaryPane = React.memo(() => {
     }
   ]
   return (
-    <Tab.Pane attached={false} className={styles.wrapper}>
+      <DimmerDimmable as={Tab.Pane} blurring dimmed={isFetching || fetchError} attached={false} className={styles.wrapper}>
+      <Dimmer active={isFetching || fetchError} inverted>
+        {
+          isFetching
+          ? <Loader size='huge'><b>Fetching Data</b></Loader>
+          : fetchError
+            ?   <Message size='huge' negative>
+                  <MessageHeader>{fetchError}</MessageHeader>
+                </Message>
+            : null
+        }
+      </Dimmer>
       <Accordion fluid styled exclusive={false} panels={panels}>
       </Accordion>
-    </Tab.Pane>
+      </DimmerDimmable>
   );
 });
 
