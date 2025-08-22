@@ -88,6 +88,7 @@ const CustomField = React.memo(({ id, customFieldGroupId }) => {
             defaultValue={customFieldValue && customFieldValue.content}
             disabled={!customField.isPersisted}
             onUpdate={handleValueUpdate}
+            inputType={customField.name.toLowerCase().includes('date') ? 'date' : 'text'}
           />
         ) : (
           <div className={styles.value}>

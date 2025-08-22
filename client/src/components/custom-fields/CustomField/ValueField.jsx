@@ -12,7 +12,7 @@ import { useEscapeInterceptor, useField, useNestedRef } from '../../../hooks';
 
 import styles from './ValueField.module.scss';
 
-const ValueField = React.memo(({ defaultValue, onUpdate, ...props }) => {
+const ValueField = React.memo(({ defaultValue, onUpdate, inputType, ...props }) => {
   const prevDefaultValue = usePrevious(defaultValue);
   const [value, handleChange, setValue] = useField(defaultValue || '');
   const [blurFieldState, blurField] = useToggle();
@@ -76,6 +76,7 @@ const ValueField = React.memo(({ defaultValue, onUpdate, ...props }) => {
       onKeyDown={handleKeyDown}
       onChange={handleChange}
       onBlur={handleBlur}
+      type={inputType}
     />
   );
 });
