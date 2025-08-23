@@ -113,6 +113,14 @@ export default class extends BaseModel {
         List.upsert(prepareList(payload.list));
 
         break;
+      case ActionTypes.PROJECT_CREATE__SUCCESS:
+        if(payload.initialLists){
+          payload.initialLists.forEach((list) => {
+            List.upsert(list);
+          })
+        }
+
+        break;
       case ActionTypes.LIST_CREATE__FAILURE:
         List.withId(payload.localId).delete();
 

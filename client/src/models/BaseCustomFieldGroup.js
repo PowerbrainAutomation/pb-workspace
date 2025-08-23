@@ -62,9 +62,11 @@ export default class extends BaseModel {
 
         break;
       case ActionTypes.PROJECT_CREATE__SUCCESS:
-        payload.initialBaseCustomFieldGroups.forEach((baseCustomFieldGroup) => {
-          BaseCustomFieldGroup.upsert(baseCustomFieldGroup);
-        })
+        if(payload.initialBaseCustomFieldGroups){
+          payload.initialBaseCustomFieldGroups.forEach((baseCustomFieldGroup) => {
+            BaseCustomFieldGroup.upsert(baseCustomFieldGroup);
+          })
+        }
 
         break;
       case ActionTypes.BASE_CUSTOM_FIELD_GROUP_CREATE__FAILURE:

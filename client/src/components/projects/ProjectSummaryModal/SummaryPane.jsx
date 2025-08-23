@@ -45,7 +45,7 @@ const SummaryPane = React.memo(() => {
   const project = useSelector(selectors.selectCurrentProject);
 
   const [projectData, setProjectData] = useState([]);
-  const [isActive, setActive] = useState([0,1]);
+  const [isActive, setActive] = useState([0]); // all open by default
   const [isFetching, setIsFetching] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
@@ -65,7 +65,7 @@ const SummaryPane = React.memo(() => {
       setIsFetching(true);
       setFetchError(null);
       try {
-        const response = await fetch(`https://ext.workspace.powerbrain.id/${token}/project/${project.id}`);
+        const response = await fetch(`https://ext.workspace.powerbrain.id/${token}/project/1576716688517236434`);
         const data = await response.json();
         setProjectData(data);
       } catch (error) {
@@ -129,13 +129,14 @@ const SummaryPane = React.memo(() => {
     )
   }
 
-  const SummaryTable = ({data}) => {
-    const TableRows = data.procurement_list?.map( x => (
+  const SummaryTable = ({data, type}) => {
+    data.sort((a, b) => new Date(a.start) - new Date(b.start));
+    const TableRows = data.map( x => (
       <TableRow>
             <TableCell>
               {x.name}
             </TableCell>
-            <TableCell> {Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', currencyDisplay: 'symbol' }).format(x.budget)}</TableCell>
+            <TableCell> {type.toLowerCase().includes('scm') || type.toLowerCase().includes('delivery') ? Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', currencyDisplay: 'symbol' }).format(x.budget) : x.budget}</TableCell>
             <TableCell> {x.start} </TableCell>
             <TableCell> {x.finish} </TableCell>
           </TableRow>
@@ -147,7 +148,7 @@ const SummaryPane = React.memo(() => {
         <TableHeader>
           <TableRow>
             <TableHeaderCell>Item Name</TableHeaderCell>
-            <TableHeaderCell>Harga</TableHeaderCell>
+            <TableHeaderCell>{type.toLowerCase().includes('scm') || type.toLowerCase().includes('delivery') ? 'Harga' : 'Beban'}</TableHeaderCell>
             <TableHeaderCell>Start</TableHeaderCell>
             <TableHeaderCell>Finish</TableHeaderCell>
           </TableRow>
@@ -160,24 +161,30 @@ const SummaryPane = React.memo(() => {
     )
   }
 
-  const panels = [
-    {
-      index: 0,
-      key: "s-curve",
-      title: "S Curve",
-      content: { content:<SummaryCurve data={projectData}/> },
-      onTitleClick: onClick,
-      active: isActive.includes(0) ? true : false
-    },
-    {
-      index: 1,
-      key: "procurement-list",
-      title: "Procurement List",
-      content: { content: <SummaryTable data={projectData}/>},
-      onTitleClick: onClick,
-      active: isActive.includes(1) ? true : false
-    }
-  ]
+  const panels = React.useMemo(() => {
+    return [
+      {
+        index: 0,
+        key: "s-curve",
+        title: "S Curve",
+        content: { content: <SummaryCurve data={projectData} /> },
+        onTitleClick: onClick,
+        active: isActive.includes(0)
+      },
+      ...(projectData?.board_card_list || []).map((item, index) => {
+        const panelIndex = index + 1;
+        return {
+          index: panelIndex,
+          key: item.name || `tab-${panelIndex}`,
+          title: item.name || `Tab ${panelIndex}`,
+          content: { content: <SummaryTable data={item.plans} type={item.name}/> },
+          onTitleClick: onClick,
+          active: isActive.includes(panelIndex)
+        };
+      })
+    ];
+  }, [projectData, isActive, onClick]);
+
   return (
       <DimmerDimmable as={Tab.Pane} blurring dimmed={isFetching || fetchError} attached={false} className={styles.wrapper}>
       <Dimmer active={isFetching || fetchError} inverted>

@@ -77,9 +77,11 @@ export default class extends BaseModel {
 
         break;
       case ActionTypes.PROJECT_CREATE__SUCCESS:
-        payload.initialCustomFields.forEach((customField) => {
-          CustomField.upsert(customField);
-        })
+        if(payload.initialCustomFields){
+          payload.initialCustomFields.forEach((customField) => {
+            CustomField.upsert(customField);
+          })
+        }
 
         break;
       case ActionTypes.CUSTOM_FIELD_CREATE__FAILURE:

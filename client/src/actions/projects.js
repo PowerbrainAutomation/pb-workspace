@@ -33,13 +33,24 @@ const createProject = (data) => ({
   },
 });
 
-createProject.success = (project, projectManagers, initialBaseCustomFieldGroups, initialCustomFields) => ({
+createProject.success = (
+  project,
+  projectManagers,
+  initialBaseCustomFieldGroups,
+  initialCustomFields,
+  initialBoards,
+  initialLists,
+  initialCards
+) => ({
   type: ActionTypes.PROJECT_CREATE__SUCCESS,
   payload: {
     project,
     projectManagers,
     initialBaseCustomFieldGroups,
     initialCustomFields,
+    initialBoards,
+    initialLists,
+    initialCards
   },
 });
 
