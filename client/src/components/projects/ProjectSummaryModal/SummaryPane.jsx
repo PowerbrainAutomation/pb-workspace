@@ -65,7 +65,7 @@ const SummaryPane = React.memo(() => {
       setIsFetching(true);
       setFetchError(null);
       try {
-        const response = await fetch(`https://ext.workspace.powerbrain.id/${token}/project/1576716688517236434`);
+        const response = await fetch(`https://ext.workspace.powerbrain.id/${token}/project/${project.id}`);
         const data = await response.json();
         setProjectData(data);
       } catch (error) {

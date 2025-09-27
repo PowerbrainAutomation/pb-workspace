@@ -34,151 +34,129 @@ module.exports = {
       request: this.req,
     });
 
-    const baseCustomFieldGroup_1 = await sails.helpers.baseCustomFieldGroups.createOne.with({
-      values: {
-        name: 'Item Info',
-        project,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const projectTemplate = require("./project-templates/base")
 
-    const customField_1_1 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
-      project,
-      values: {
-        name: 'Budget',
-        showOnFrontOfCard: false,
-        position: 65536,
-        baseCustomFieldGroup: baseCustomFieldGroup_1,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const baseCustomFieldGroups = await Promise.all(
+      projectTemplate.baseCustomFieldGroupDefs.map((def) =>
+        sails.helpers.baseCustomFieldGroups.createOne.with({
+          values: {
+            name: def.name,
+            project,
+          },
+          actorUser: currentUser,
+          request: this.req,
+        }),
+      ),
+    );
 
-    const customField_1_2 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
-      project,
-      values: {
-        name: 'Start Date',
-        showOnFrontOfCard: false,
-        position: 131072,
-        baseCustomFieldGroup: baseCustomFieldGroup_1,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const customFields = await Promise.all(
+      projectTemplate.customFieldDefs.map((def) =>
+        sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
+          project,
+          values: {
+            name: def.name,
+            showOnFrontOfCard: false,
+            position: def.position,
+            baseCustomFieldGroup: baseCustomFieldGroups.find(
+              (group) => group.name === def.baseCustomFieldGroupName,
+            ),
+          },
+          actorUser: currentUser,
+          request: this.req,
+        }),
+      ),
+    );
 
-    const customField_1_3 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
-      project,
-      values: {
-        name: 'Finish Date',
-        showOnFrontOfCard: false,
-        position: 196608,
-        baseCustomFieldGroup: baseCustomFieldGroup_1,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const boardResult = await Promise.all(
+      projectTemplate.boardDefs.map((def) =>
+        sails.helpers.boards.createOne.with({
+          values: {
+            name: def.name,
+            position: def.position,
+            project,
+          },
+          import: undefined,
+          actorUser: currentUser,
+          requestId: inputs.requestId,
+          request: this.req,
+        }),
+      ),
+    );
 
-    const customField_1_4 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
-      project,
-      values: {
-        name: 'Actual',
-        showOnFrontOfCard: false,
-        position: 262144,
-        baseCustomFieldGroup: baseCustomFieldGroup_1,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const boards = boardResult.map(r => r.board);
+    const boardMemberships = boardResult.map(r => r.boardMembership);
 
-    const baseCustomFieldGroup_2 = await sails.helpers.baseCustomFieldGroups.createOne.with({
-      values: {
-        name: 'Planned Project Timeline',
-        project,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const lists = await Promise.all(
+      projectTemplate.listDefs.map((def) =>
+        sails.helpers.lists.createOne.with({
+          project,
+          values: {
+            name: def.name,
+            type: def.type,
+            position: def.position,
+            board: boards.find((board) => board.name === def.boardName),
+          },
+          actorUser: currentUser,
+          request: this.req,
+        }),
+      ),
+    );
 
-    const customField_2_1 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
-      project,
-      values: {
-        name: 'Start Date',
-        showOnFrontOfCard: false,
-        position: 65536,
-        baseCustomFieldGroup: baseCustomFieldGroup_2,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const cards = await Promise.all(
+      projectTemplate.cardDefs.map((def) =>
+        sails.helpers.cards.createOne
+          .with({
+            project,
+            values: {
+              name: def.name,
+              type: def.type,
+              position: def.position,
+              board: boards.find((board) => board.name === def.boardName),
+              list: lists.find((list) => list.name === def.listName),
+              creatorUser: currentUser,
+            },
+            request: this.req,
+          })
+          .intercept('positionMustBeInValues', () => Errors.POSITION_MUST_BE_PRESENT),
+      ),
+    );
 
-    const customField_2_2 = await sails.helpers.customFields.createOneInBaseCustomFieldGroup.with({
-      project,
-      values: {
-        name: 'Finish Date',
-        showOnFrontOfCard: false,
-        position: 131072,
-        baseCustomFieldGroup: baseCustomFieldGroup_2,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
-
-    // Create a default board for the project
-    let boardImport;
-    const { board, boardMembership } = await sails.helpers.boards.createOne.with({
-      values: {
-        name: 'Project Info',
-        position: 65536,
-        project,
-      },
-      import: boardImport,
-      actorUser: currentUser,
-      requestId: inputs.requestId,
-      request: this.req,
-    });
-
-    const list = await sails.helpers.lists.createOne.with({
-      project,
-      values: {
-        name: 'Project Info',
-        type: 'active',
-        position: 65536,
-        board,
-      },
-      actorUser: currentUser,
-      request: this.req,
-    });
-
-    const card = await sails.helpers.cards.createOne
-      .with({
-        project,
-        values: {
-          name: 'Project Info',
-          type: 'project',
-          position: 65536,
-          board,
-          list,
-          creatorUser: currentUser,
-        },
-        request: this.req,
-      })
-      .intercept('positionMustBeInValues', () => Errors.POSITION_MUST_BE_PRESENT);
+    const customFieldGroups = await Promise.all(
+      projectTemplate.customFieldGroupsDefs.map((def) =>
+        sails.helpers.customFieldGroups.createOneInCard
+          .with({
+            project,
+            board: boards.find((board) => board.name === def.boardName),
+            list: lists.find((list) => list.name === def.listName),
+            values: {
+              name: def.name,
+              position: def.position,
+              card: cards.find((card) => card.name === def.cardName),
+              baseCustomFieldGroup: baseCustomFieldGroups.find(
+                (group) => group.name === def.baseCustomFieldGroupName,
+              ),
+            },
+            actorUser: currentUser,
+            request: this.req,
+          })
+          .intercept(
+            'baseCustomFieldGroupOrNameMustBeInValues',
+            () => Errors.BASE_CUSTOM_FIELD_GROUP_OR_NAME_MUST_BE_PRESENT,
+          ),
+      ),
+    );
 
     return {
       item: project,
       included: {
         projectManagers: [projectManager],
-        initialBaseCustomFieldGroups: [baseCustomFieldGroup_1, baseCustomFieldGroup_2],
-        initialCustomFields: [customField_1_1,
-                              customField_1_2,
-                              customField_1_3,
-                              customField_1_4,
-                              customField_2_1,
-                              customField_2_2],
-        initialBoards: [board],
-        initialLists: [list],
-        initialCards: [card],
+        initialBaseCustomFieldGroups: baseCustomFieldGroups,
+        initialCustomFields: customFields,
+        initialBoards: boards,
+        initialBoardMemberships: boardMemberships,
+        initialLists: lists,
+        initialCards: cards,
+        initialCustomFieldGroups: customFieldGroups,
       },
     };
   },

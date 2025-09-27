@@ -6,7 +6,7 @@
 import omit from 'lodash/omit';
 import { call, put, select } from 'redux-saga/effects';
 
-import { goToProject, goToRoot } from './router';
+import { goToProject, goToRoot, goToBoard } from './router';
 import request from '../request';
 import requests from '../requests';
 import selectors from '../../../selectors';
@@ -37,6 +37,7 @@ export function* toggleHiddenProjects(isVisible) {
   yield put(actions.toggleHiddenProjects(isVisible));
 }
 
+// MODIFIED BY POWERBRAIN
 export function* createProject(data) {
   yield put(actions.createProject(omit(data, 'type')));
 
@@ -45,9 +46,10 @@ export function* createProject(data) {
   let initialBaseCustomFieldGroups;
   let initialCustomFields;
   let initialBoards;
+  let initialBoardMemberships;
   let initialLists;
   let initialCards;
-
+  let initialCustomFieldGroups
 
   try {
     ({
@@ -56,8 +58,10 @@ export function* createProject(data) {
                   initialBaseCustomFieldGroups,
                   initialCustomFields,
                   initialBoards,
+                  initialBoardMemberships,
                   initialLists,
-                  initialCards
+                  initialCards,
+                  initialCustomFieldGroups
                 },
     } = yield call(request, api.createProject, data));
   } catch (error) {
@@ -66,15 +70,18 @@ export function* createProject(data) {
   }
 
   yield put(actions.createProject.success(
-    project,
-    projectManagers,
-    initialBaseCustomFieldGroups,
-    initialCustomFields,
-    initialBoards,
-    initialLists,
-    initialCards
+      project,
+      projectManagers,
+      initialBaseCustomFieldGroups,
+      initialCustomFields,
+      initialBoards,
+      initialBoardMemberships,
+      initialLists,
+      initialCards,
+      initialCustomFieldGroups
   ));
   yield call(goToProject, project.id);
+  yield call(goToBoard, initialBoards[0].id);
 }
 
 export function* handleProjectCreate({ id }) {

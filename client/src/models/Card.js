@@ -301,6 +301,14 @@ export default class extends BaseModel {
           })
         }
 
+      break;
+      case ActionTypes.PROJECT_CREATE__SUCCESS:
+        if(payload.initialCards){
+          payload.initialCards.forEach((card) => {
+            Card.upsert(card);
+          })
+        }
+
         break;
       case ActionTypes.CARD_CREATE__FAILURE:
         Card.withId(payload.localId).deleteWithClearable();

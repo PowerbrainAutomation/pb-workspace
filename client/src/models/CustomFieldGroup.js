@@ -79,6 +79,14 @@ export default class extends BaseModel {
         CustomFieldGroup.upsert(payload.customFieldGroup);
 
         break;
+      case ActionTypes.PROJECT_CREATE__SUCCESS:
+        if(payload.initialCustomFieldGroups){
+          payload.initialCustomFieldGroups.forEach((customFieldGroup) => {
+            CustomFieldGroup.upsert(customFieldGroup);
+          })
+        }
+
+      break;
       case ActionTypes.CUSTOM_FIELD_GROUP_CREATE__FAILURE:
         CustomFieldGroup.withId(payload.localId).delete();
 

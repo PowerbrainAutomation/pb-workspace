@@ -33,14 +33,17 @@ const createProject = (data) => ({
   },
 });
 
+// MODIFIED BY POWERBRAIN
 createProject.success = (
   project,
   projectManagers,
   initialBaseCustomFieldGroups,
   initialCustomFields,
   initialBoards,
+  initialBoardMemberships,
   initialLists,
-  initialCards
+  initialCards,
+  initialCustomFieldGroups
 ) => ({
   type: ActionTypes.PROJECT_CREATE__SUCCESS,
   payload: {
@@ -49,8 +52,10 @@ createProject.success = (
     initialBaseCustomFieldGroups,
     initialCustomFields,
     initialBoards,
+    initialBoardMemberships,
     initialLists,
-    initialCards
+    initialCards,
+    initialCustomFieldGroups
   },
 });
 
